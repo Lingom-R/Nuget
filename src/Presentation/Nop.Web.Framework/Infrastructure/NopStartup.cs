@@ -92,6 +92,7 @@ namespace Nop.Web.Framework.Infrastructure
             services.AddTransient(typeof(IConcurrentCollection<>), typeof(ConcurrentTrie<>));
 
             services.AddSingleton<ICacheKeyManager, CacheKeyManager>();
+            services.AddScoped<IShortTermCacheManager, PerRequestCacheManager>();
 
             if (distributedCacheConfig.Enabled)
             {
