@@ -5,6 +5,7 @@ using Nop.Core;
 using Nop.Core.Domain.Security;
 using Nop.Data;
 using Nop.Services.Logging;
+using Nop.Web.Framework.Extensions;
 
 namespace Nop.Web.Framework.Mvc.Filters
 {
@@ -64,9 +65,6 @@ namespace Nop.Web.Framework.Mvc.Filters
                 if (context == null)
                     throw new ArgumentNullException(nameof(context));
 
-                if (context.HttpContext.Request == null)
-                    return;
-
                 if (!DataSettingsManager.IsDatabaseInstalled())
                     return;
 
@@ -75,7 +73,7 @@ namespace Nop.Web.Framework.Mvc.Filters
                     return;
 
                 //try get honeypot input value 
-                var inputValue = context.HttpContext.Request.Form[_securitySettings.HoneypotInputName];
+                var inputValue = await context.HttpContext.Request.GetFormValueAsync(_securitySettings.HoneypotInputName);
 
                 //if exists, bot is caught
                 if (!StringValues.IsNullOrEmpty(inputValue))

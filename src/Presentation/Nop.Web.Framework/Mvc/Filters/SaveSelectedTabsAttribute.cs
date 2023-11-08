@@ -109,7 +109,7 @@ namespace Nop.Web.Framework.Mvc.Filters
                 var persistForTheNextRequest = actionFilter?.PersistForTheNextRequest ?? _persistForTheNextRequest;
 
                 if (context.Controller is BaseController controller)
-                    controller.SaveSelectedTabName(persistForTheNextRequest: persistForTheNextRequest);
+                    controller.SaveSelectedTabNameAsync(persistForTheNextRequest: persistForTheNextRequest);
             }
 
             #endregion

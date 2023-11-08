@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Nop.Web.Framework.Extensions;
 
 namespace Nop.Web.Framework.Mvc.ModelBinding.Binders
 {
@@ -7,7 +8,7 @@ namespace Nop.Web.Framework.Mvc.ModelBinding.Binders
     /// </summary>
     public class CustomPropertiesModelBinder : IModelBinder
     {
-        Task IModelBinder.BindModelAsync(ModelBindingContext bindingContext)
+        async Task IModelBinder.BindModelAsync(ModelBindingContext bindingContext)
         {
             if (bindingContext == null)
                 throw new ArgumentNullException(nameof(bindingContext));
@@ -16,17 +17,13 @@ namespace Nop.Web.Framework.Mvc.ModelBinding.Binders
 
             var result = new Dictionary<string, string>();
             if (bindingContext.HttpContext.Request.Method == "POST")
-            {
-                var keys = bindingContext.HttpContext.Request.Form.Keys
-                    .Where(x => x.IndexOf(modelName, StringComparison.Ordinal) == 0).ToList();
-
-                foreach (var key in keys)
-                {
-                    var dicKey = key.Replace(modelName + "[", "").Replace("]", "");
-                    bindingContext.HttpContext.Request.Form.TryGetValue(key, out var value);
-                    result.Add(dicKey, value.ToString());
-                }
-            }
+                await bindingContext.HttpContext.Request.FormForeachAsync(
+                    x => x.IndexOf(modelName, StringComparison.Ordinal) == 0,
+                    (key, value) =>
+                    {
+                        var dicKey = key.Replace(modelName + "[", "").Replace("]", "");
+                        result.Add(dicKey, value.ToString());
+                    });
 
             if (bindingContext.HttpContext.Request.Method == "GET")
             {
@@ -46,8 +43,6 @@ namespace Nop.Web.Framework.Mvc.ModelBinding.Binders
             }
 
             bindingContext.Result = ModelBindingResult.Success(result);
-
-            return Task.CompletedTask;
         }
     }
 }

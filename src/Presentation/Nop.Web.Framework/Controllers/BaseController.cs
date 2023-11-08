@@ -6,9 +6,11 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.ViewComponents;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Mvc.ViewFeatures.Buffers;
+using Microsoft.Extensions.Primitives;
 using Nop.Core;
 using Nop.Core.Infrastructure;
 using Nop.Services.Localization;
+using Nop.Web.Framework.Extensions;
 using Nop.Web.Framework.Models;
 using Nop.Web.Framework.Mvc.Filters;
 using Nop.Web.Framework.UI;
@@ -238,18 +240,20 @@ namespace Nop.Web.Framework.Controllers
         /// </summary>
         /// <param name="tabName">Tab name to save; empty to automatically detect it</param>
         /// <param name="persistForTheNextRequest">A value indicating whether a message should be persisted for the next request. Pass null to ignore</param>
-        public virtual void SaveSelectedTabName(string tabName = "", bool persistForTheNextRequest = true)
+        public virtual async Task SaveSelectedTabNameAsync(string tabName = "", bool persistForTheNextRequest = true)
         {
             //default root tab
-            SaveSelectedTabName(tabName, "selected-tab-name", null, persistForTheNextRequest);
+            SaveSelectedTabName(tabName, await Request.GetFormValueAsync("selected-tab-name"), null, persistForTheNextRequest);
             //child tabs (usually used for localization)
             //Form is available for POST only
             if (!Request.Method.Equals(WebRequestMethods.Http.Post, StringComparison.InvariantCultureIgnoreCase))
                 return;
-
-            foreach (var key in Request.Form.Keys)
+            
+            await Request.FormForeachAsync((key, val) =>
+            {
                 if (key.StartsWith("selected-tab-name-", StringComparison.InvariantCultureIgnoreCase))
-                    SaveSelectedTabName(null, key, key["selected-tab-name-".Length..], persistForTheNextRequest);
+                    SaveSelectedTabName(null, val, key["selected-tab-name-".Length..], persistForTheNextRequest);
+            });
         }
 
         /// <summary>
@@ -257,16 +261,14 @@ namespace Nop.Web.Framework.Controllers
         /// </summary>
         /// <param name="tabName">Tab name to save; empty to automatically detect it</param>
         /// <param name="persistForTheNextRequest">A value indicating whether a message should be persisted for the next request. Pass null to ignore</param>
-        /// <param name="formKey">Form key where selected tab name is stored</param>
+        /// <param name="selectedTabName">Selected tab name</param>
         /// <param name="dataKeyPrefix">A prefix for child tab to process</param>
-        protected virtual void SaveSelectedTabName(string tabName, string formKey, string dataKeyPrefix, bool persistForTheNextRequest)
+        protected virtual void SaveSelectedTabName(string tabName, StringValues selectedTabName, string dataKeyPrefix, bool persistForTheNextRequest)
         {
             //keep this method synchronized with
             //"GetSelectedTabName" method of \Nop.Web.Framework\Extensions\HtmlExtensions.cs
             if (string.IsNullOrEmpty(tabName))
-            {
-                tabName = Request.Form[formKey];
-            }
+                tabName = selectedTabName;
 
             if (string.IsNullOrEmpty(tabName))
                 return;
@@ -276,13 +278,9 @@ namespace Nop.Web.Framework.Controllers
                 dataKey += $"-{dataKeyPrefix}";
 
             if (persistForTheNextRequest)
-            {
                 TempData[dataKey] = tabName;
-            }
             else
-            {
                 ViewData[dataKey] = tabName;
-            }
         }
 
         #endregion

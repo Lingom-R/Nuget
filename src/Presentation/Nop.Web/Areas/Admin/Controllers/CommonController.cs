@@ -15,6 +15,7 @@ using Nop.Web.Areas.Admin.Factories;
 using Nop.Web.Areas.Admin.Models.Common;
 using Nop.Web.Framework;
 using Nop.Web.Framework.Controllers;
+using Nop.Web.Framework.Extensions;
 
 namespace Nop.Web.Areas.Admin.Controllers
 {
@@ -286,9 +287,9 @@ namespace Nop.Web.Areas.Admin.Controllers
             if (!await _permissionService.AuthorizeAsync(StandardPermissionProvider.ManageMaintenance))
                 return AccessDeniedView();
 
-            var action = Request.Form["action"];
+            var action = await Request.GetFormValueAsync("action");
 
-            var fileName = Request.Form["backupFileName"];
+            var fileName = await Request.GetFormValueAsync("backupFileName");
             fileName = _fileProvider.GetFileName(_fileProvider.GetAbsolutePath(fileName));
 
             var backupPath = _maintenanceService.GetBackupPath(fileName);

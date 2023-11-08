@@ -30,6 +30,7 @@ using Nop.Services.Tax;
 using Nop.Web.Components;
 using Nop.Web.Factories;
 using Nop.Web.Framework.Controllers;
+using Nop.Web.Framework.Extensions;
 using Nop.Web.Framework.Mvc;
 using Nop.Web.Framework.Mvc.Filters;
 using Nop.Web.Framework.Mvc.Routing;
@@ -1000,7 +1001,7 @@ namespace Nop.Web.Controllers
                 });
             }
 
-            var httpPostedFile = Request.Form.Files.FirstOrDefault();
+            var httpPostedFile = await Request.GetFirstOrDefaultFileAsync();
             if (httpPostedFile == null)
             {
                 return Json(new
@@ -1015,8 +1016,8 @@ namespace Nop.Web.Controllers
 
             var qqFileNameParameter = "qqfilename";
             var fileName = httpPostedFile.FileName;
-            if (string.IsNullOrEmpty(fileName) && Request.Form.ContainsKey(qqFileNameParameter))
-                fileName = Request.Form[qqFileNameParameter].ToString();
+            if (string.IsNullOrEmpty(fileName) && await Request.IsFormKeyExistsAsync(qqFileNameParameter))
+                fileName = await Request.GetFormValueAsync(qqFileNameParameter);
             //remove path (passed in IE)
             fileName = _fileProvider.GetFileName(fileName);
 
@@ -1082,7 +1083,7 @@ namespace Nop.Web.Controllers
                 });
             }
 
-            var httpPostedFile = Request.Form.Files.FirstOrDefault();
+            var httpPostedFile = await Request.GetFirstOrDefaultFileAsync();
             if (httpPostedFile == null)
             {
                 return Json(new
@@ -1097,8 +1098,8 @@ namespace Nop.Web.Controllers
 
             var qqFileNameParameter = "qqfilename";
             var fileName = httpPostedFile.FileName;
-            if (string.IsNullOrEmpty(fileName) && Request.Form.ContainsKey(qqFileNameParameter))
-                fileName = Request.Form[qqFileNameParameter].ToString();
+            if (string.IsNullOrEmpty(fileName) && await Request.IsFormKeyExistsAsync(qqFileNameParameter))
+                fileName = await Request.GetFormValueAsync(qqFileNameParameter);
             //remove path (passed in IE)
             fileName = _fileProvider.GetFileName(fileName);
 
