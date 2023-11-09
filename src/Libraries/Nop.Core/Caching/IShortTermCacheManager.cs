@@ -3,7 +3,7 @@
     /// <summary>
     /// Represents a manager for caching during an HTTP request (short term caching)
     /// </summary>
-    public partial interface IShortTermCacheManager
+    public partial interface IShortTermCacheManager : ICacheKeyService
     {
         /// <summary>
         /// Get a cached item. If it's not in the cache yet, then load and cache it
