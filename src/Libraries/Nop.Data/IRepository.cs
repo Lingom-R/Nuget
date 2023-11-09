@@ -18,11 +18,12 @@ namespace Nop.Data
         /// <param name="id">Entity entry identifier</param>
         /// <param name="getCacheKey">Function to get a cache key; pass null to don't cache; return null from this function to use the default key</param>
         /// <param name="includeDeleted">Whether to include deleted items (applies only to <see cref="Nop.Core.Domain.Common.ISoftDeletedEntity"/> entities)</param>
+        /// <param name="useShortTermCache">Whether to use short term cache instead of static cache</param>
         /// <returns>
         /// A task that represents the asynchronous operation
         /// The task result contains the entity entry
         /// </returns>
-        Task<TEntity> GetByIdAsync(int? id, Func<ICacheKeyService, CacheKey> getCacheKey = null, bool includeDeleted = true);
+        Task<TEntity> GetByIdAsync(int? id, Func<ICacheKeyService, CacheKey> getCacheKey = null, bool includeDeleted = true, bool useShortTermCache = false);
 
         /// <summary>
         /// Get the entity entry

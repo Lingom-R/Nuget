@@ -112,7 +112,7 @@ namespace Nop.Services.Common
         /// </returns>
         public virtual async Task<Address> GetAddressByIdAsync(int addressId)
         {
-            return await _shortTermCacheManager.GetAsync(async () => await _addressRepository.GetByIdAsync(addressId), NopEntityCacheDefaults<Address>.ByIdCacheKey, addressId);
+            return await _addressRepository.GetByIdAsync(addressId, cache => default, useShortTermCache: true);
         }
 
         /// <summary>

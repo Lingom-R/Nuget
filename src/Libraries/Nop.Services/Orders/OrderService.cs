@@ -122,7 +122,7 @@ namespace Nop.Services.Orders
         /// </returns>
         public virtual async Task<Order> GetOrderByIdAsync(int orderId)
         {
-            return await _shortTermCacheManager.GetAsync(async () => await _orderRepository.GetByIdAsync(orderId), NopEntityCacheDefaults<Order>.ByIdCacheKey, orderId);
+            return await _orderRepository.GetByIdAsync(orderId, cache => default, useShortTermCache: true);
         }
 
         /// <summary>
@@ -508,7 +508,7 @@ namespace Nop.Services.Orders
         /// </returns>
         public virtual async Task<OrderItem> GetOrderItemByIdAsync(int orderItemId)
         {
-            return await _shortTermCacheManager.GetAsync(async () => await _orderItemRepository.GetByIdAsync(orderItemId), NopEntityCacheDefaults<OrderItem>.ByIdCacheKey, orderItemId);
+            return await _orderItemRepository.GetByIdAsync(orderItemId, cache => default, useShortTermCache: true);
         }
 
         /// <summary>

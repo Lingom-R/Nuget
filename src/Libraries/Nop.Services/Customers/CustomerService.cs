@@ -348,7 +348,7 @@ namespace Nop.Services.Customers
         /// </returns>
         public virtual async Task<Customer> GetCustomerByIdAsync(int customerId)
         {
-            return await _shortTermCacheManager.GetAsync(async () => await _customerRepository.GetByIdAsync(customerId), NopEntityCacheDefaults<Customer>.ByIdCacheKey, customerId);
+            return await _customerRepository.GetByIdAsync(customerId, cache => default, useShortTermCache: true);
         }
 
         /// <summary>
@@ -441,14 +441,12 @@ namespace Nop.Services.Customers
             if (string.IsNullOrWhiteSpace(systemName))
                 return null;
 
-            var key = _staticCacheManager.PrepareKeyForDefaultCache(NopCustomerServicesDefaults.CustomerBySystemNameCacheKey, systemName);
-
             var query = from c in _customerRepository.Table
                         orderby c.Id
                         where c.SystemName == systemName
                         select c;
 
-            var customer = await _staticCacheManager.GetAsync(key, async () => await query.FirstOrDefaultAsync());
+            var customer = await _shortTermCacheManager.GetAsync(async () => await query.FirstOrDefaultAsync(), NopCustomerServicesDefaults.CustomerBySystemNameCacheKey, systemName);
 
             return customer;
         }
