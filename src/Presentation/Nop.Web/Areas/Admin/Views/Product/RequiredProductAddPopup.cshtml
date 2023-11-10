@@ -129,7 +129,9 @@
                         })
                         <script>
                             function renderColumnSelectProduct(data, type, row, meta) {
-                                return '<button type="button" onclick="selectRequiredProduct(' + row.Id + ' )" class="btn btn-default">@T("Admin.Common.Select").Text</button>';
+                                if (@(Context.Request.Query["currentProductId"]) != row.Id)
+                                    return '<button type="button" onclick="selectRequiredProduct(' + row.Id + ' )" class="btn btn-default">@T("Admin.Common.Select").Text</button>';
+                                return ''
                             }
                             function selectRequiredProduct(productid) {
                                 try {
